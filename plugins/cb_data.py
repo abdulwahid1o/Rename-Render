@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from helper.database import db
-import os 
+import os
 import humanize
 from PIL import Image
 import time
@@ -21,7 +21,6 @@ async def upload(bot, update):
     file = update.message.reply_to_message
     ms = await update.message.edit("⚠️__**Please wait...**__\n__Downloading file to my server...__")
     c_time = time.time()
-
     try:
         path = await bot.download_media(
             message=file, 
@@ -31,7 +30,7 @@ async def upload(bot, update):
     except Exception as e:
         await ms.edit(str(e))
         return 
-
+    
     file_path = path
     duration = 0
     try:
@@ -45,7 +44,6 @@ async def upload(bot, update):
     ph_path = None
     media = getattr(file, file.media.value)
     c_caption = await db.get_caption(update.message.chat.id)
-    c_thumb = await db.get_thumbnail(update.message.chat.id)
 
     caption = c_caption.format(
         filename=os.path.basename(file_path), 

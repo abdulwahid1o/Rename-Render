@@ -1,5 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import ForceReply
+from cb_data import upload  # Importing the upload function from cb_data.py
 
 @Client.on_message(filters.private & filters.reply)
 async def refunc(client, message):
@@ -24,4 +25,4 @@ async def refunc(client, message):
             reply_to_message_id=file.id,
         )
         # Trigger the upload process directly
-        await upload(client, msg)
+        await upload(client, msg)  # Directly calling the upload function

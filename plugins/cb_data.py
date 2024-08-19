@@ -1,27 +1,9 @@
-from helper.utils import progress_for_pyrogram, convert
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from hachoir.metadata import extractMetadata
-from hachoir.parser import createParser
-from helper.database import db
-import os 
-import humanize
-from PIL import Image
-import time
-
-@Client.on_callback_query(filters.regex('cancel'))
-async def cancel(bot, update):
-    try:
-        await update.message.delete()
-    except:
-        return
-
 @Client.on_callback_query(filters.regex("upload"))
 async def upload(bot, update):
-    new_filename = update.message.text.split(":-")[1]  # This line may not be necessary anymore
     file = update.message.reply_to_message
     ms = await update.message.edit("⚠️__**Please wait...**__\n__Downloading file to my server...__")
     c_time = time.time()
+
     try:
         path = await bot.download_media(
             message=file, 
@@ -31,8 +13,8 @@ async def upload(bot, update):
     except Exception as e:
         await ms.edit(str(e))
         return 
-    
-    file_path = path  # Use the original path as the file_path
+
+    file_path = path
     duration = 0
     try:
         metadata = extractMetadata(createParser(file_path))

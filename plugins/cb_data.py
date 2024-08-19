@@ -1,6 +1,4 @@
-# Don't Remove Credit @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
+
 
 from helper.utils import progress_for_pyrogram, convert
 from pyrogram import Client, filters
@@ -39,7 +37,7 @@ async def doc(bot,update):
      ms = await update.message.edit("⚠️__**Please wait...**__\n__Downloading file to my server...__")
      c_time = time.time()
      try:
-     	path = await bot.download_media(message = file, progress=progress_for_pyrogram,progress_args=( "\n⚠️__**Please wait...**__\n\n😈 **VJ Hack in progress...**",  ms, c_time   ))
+     	path = await bot.download_media(message = file, progress=progress_for_pyrogram,progress_args=( "\n⚠️__**Please wait...**__\n\n😈 **Video Converter Bot in progress...**",  ms, c_time   ))
      except Exception as e:
      	await ms.edit(e)
      	return 

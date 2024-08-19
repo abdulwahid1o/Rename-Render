@@ -4,7 +4,7 @@
 
 class mr(object):
     PROGRESS_BAR = """\n
-╭━━━━❰ VJ Bot Renaming... ❱━➣
+╭━━━━❰ VideoConverter Bot Renaming... ❱━➣
 ┣⪼ 🗂️ : {1} | {2}
 ┣⪼ ⏳️ : {0}%
 ┣⪼ 🚀 : {3}/s

@@ -1,17 +1,16 @@
-from asyncio import sleep
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from pyrogram.errors import FloodWait
 import humanize
 from helper.database import db
-from config import START_PIC, FLOOD, ADMIN 
+from cb_data import upload  # Importing the upload function from cb_data.py
+from config import START_PIC, ADMIN 
 
 @Client.on_message(filters.private & filters.command(["start"]))
 async def start(client, message):
     user = message.from_user
     if not await db.is_user_exist(user.id):
         await db.add_user(user.id)             
-    txt=f"👋 Hello Developer {user.mention} \n\nI am an Advance file Renamer and file Converter BOT with Custom thumbnail support.\n\nSend me any video or document !"
+    txt=f"👋 Hello Developer {user.mention} \n\nI am an Advanced file Renamer and file Converter BOT with Custom thumbnail support.\n\nSend me any video or document !"
     button=InlineKeyboardMarkup([[
         InlineKeyboardButton(" Developer ", url='https://t.me/anjel_neha')
         ],[
@@ -49,4 +48,4 @@ async def rename_start(client, message):
     await message.reply_text(text=text, reply_to_message_id=message.id)
 
     # Trigger the upload process directly
-    await upload(client, message)
+    await upload(client, message)  # Directly calling the upload function

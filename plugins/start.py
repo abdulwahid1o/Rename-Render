@@ -7,6 +7,8 @@ import random
 from helper.txt import mr
 from helper.database import db
 from config import START_PIC, FLOOD, ADMIN
+import time
+import os
 
 @Client.on_message(filters.private & filters.command(["start"]))
 async def start(client, message):
@@ -37,17 +39,46 @@ async def rename_start(client, message):
     filesize = humanize.naturalsize(file.file_size)
     fileid = file.file_id
 
-    # Directly call the conversion process without prompting for rename
+    # Inform user that the processing has started
     text = f"**Processing the file:** `{filename}`\n**File Size:** `{filesize}`"
     await message.reply_text(text=text, reply_to_message_id=message.id)
 
-    # Assuming you have a function to handle the conversion process
-    await process_file_conversion(client, message, fileid)
+    # Call the file conversion function
+    await process_file_conversion(client, message, fileid, filename)
 
-async def process_file_conversion(client, message, fileid):
-    # Place your file conversion logic here
-    # For example, if you already have code to convert and upload:
-    await doc(client, message)  # Replace this with your actual conversion function
+async def process_file_conversion(client, message, fileid, filename):
+    try:
+        # Download the file
+        file_path = await client.download_media(fileid)
+        
+        # Convert the file (if needed) and prepare for upload
+        # Replace this with your actual conversion process if any
+        # Assuming the file is already in the correct format and just needs uploading
+        
+        duration = 0
+        ph_path = None  # Thumbnail path
+        # Extract metadata if needed (e.g., duration)
+        # If needed, insert your metadata extraction logic here
+        
+        # Use default caption if no custom caption is set
+        caption = f"**{filename}**"
+        
+        # Send the file as a video
+        await client.send_video(
+            chat_id=message.chat.id,
+            video=file_path,
+            caption=caption,
+            duration=duration,
+            thumb=ph_path
+        )
+
+        # Cleanup
+        os.remove(file_path)
+        if ph_path:
+            os.remove(ph_path)
+
+    except Exception as e:
+        await message.reply_text(f"Error during file processing: {str(e)}")
 
 @Client.on_callback_query()
 async def cb_handler(client, query: CallbackQuery):

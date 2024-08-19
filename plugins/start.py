@@ -1,6 +1,4 @@
-# Don't Remove Credit @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
+
 
 from asyncio import sleep
 from pyrogram import Client, filters
@@ -20,19 +18,10 @@ async def start(client, message):
         await db.add_user(user.id)             
     txt=f"👋 Hello Developer {user.mention} \n\nI am an Advance file Renamer and file Converter BOT with Custom thumbnail support.\n\nSend me any video or document !"
     button=InlineKeyboardMarkup([[
-        InlineKeyboardButton(" Developer ", url='https://t.me/anjel_neha')
-        ],[
-        InlineKeyboardButton(' Updates', url='https://t.me/VJ_Bots'),
-        InlineKeyboardButton(' Support', url='https://t.me/vj_bot_disscussion')
-        ],[
-        InlineKeyboardButton(' About', callback_data='about'),
-        InlineKeyboardButton(' Help', callback_data='help')
-        ],[
-        InlineKeyboardButton(" Join Our Movie Channel !", url='https://t.me/VJ_Bots')
-        ],[
-        InlineKeyboardButton("❤️ Subscribe YT ❤️", url='https://www.youtube.com/@Tech_VJ')
-        ]
-        ])
+     InlineKeyboardButton(' About', callback_data='about'),
+     InlineKeyboardButton(' Help', callback_data='help')
+     ]]
+)
     if START_PIC:
         await message.reply_photo(START_PIC, caption=txt, reply_markup=button)       
     else:

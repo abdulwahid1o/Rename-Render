@@ -55,25 +55,4 @@ class Database:
 
 db = Database(DB_URL, DB_NAME)
 
-import motor.motor_asyncio
-
-# Assuming you have a MongoDB database setup
-client = motor.motor_asyncio.AsyncIOMotorClient("MONGODB_URI")
-db = client["your_database_name"]
-
-async def set_media_preference(user_id, media_type):
-    await db.preferences.update_one(
-        {"user_id": user_id},
-        {"$set": {"media_type": media_type}},
-        upsert=True
-    )
-
-async def get_media_preference(user_id):
-    user = await db.preferences.find_one({"user_id": user_id})
-    return user.get("media_type") if user else None
-
-async def delete_media_preference(user_id):
-    await db.preferences.delete_one({"user_id": user_id})
-
-
 

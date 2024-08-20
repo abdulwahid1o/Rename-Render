@@ -14,7 +14,7 @@ async def start(client, message):
     user = message.from_user
     if not await db.is_user_exist(user.id):
         await db.add_user(user.id)             
-    txt = f"👋 Hello Developer {user.mention} \n\nI am an Advance file Renamer and file Converter BOT with Custom thumbnail support.\n\nSend me any video or document!"
+    txt = f"👋 Hello User {user.mention} \n\nI am an Advance file Renamer and file Converter BOT with Custom thumbnail support.\n\nSend me any video or document!"
     button = InlineKeyboardMarkup([[
         InlineKeyboardButton(' Support', url='https://t.me/AskAbdulWahid_bot')
         ],[
@@ -22,7 +22,9 @@ async def start(client, message):
         [InlineKeyboardButton(' Help', callback_data='help')]
     ])
     if START_PIC:
-        await message.reply_photo(START_PIC, caption=txt, reply_markup=button)     
+        l = await message.reply_photo(START_PIC, caption=txt, reply_markup=button)  
+        await asyncio.sleep(5) 
+        await l.delete()
     else:
         await message.reply_text(text=txt, reply_markup=button, disable_web_page_preview=True)
     

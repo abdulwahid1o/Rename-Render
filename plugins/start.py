@@ -19,8 +19,8 @@ async def start(client, message):
     button=InlineKeyboardMarkup([[
         InlineKeyboardButton(' Support', url='https://t.me/abdul_wahid101')
         ],[
-        InlineKeyboardButton(' About', callback_data='about'),
-        InlineKeyboardButton(' Help', callback_data='help')
+        InlineKeyboardButton(' About', callback_data='about') ],
+        [InlineKeyboardButton(' Help', callback_data='help')
         ]
         ])
     if START_PIC:

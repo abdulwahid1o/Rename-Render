@@ -1,55 +1,38 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-import os
-import json
 
-# Assuming preferences are stored in a JSON file
-PREFERENCES_FILE = "preferences.json"
+# Assume that the database methods are in a helper file `database.py`
+from helper.database import set_media_preference, get_media_preference, delete_media_preference
 
-# Load preferences from file
-def load_preferences():
-    if os.path.exists(PREFERENCES_FILE):
-        with open(PREFERENCES_FILE, "r") as f:
-            return json.load(f)
-    return {}
-
-# Save preferences to file
-def save_preferences(preferences):
-    with open(PREFERENCES_FILE, "w") as f:
-        json.dump(preferences, f, indent=4)
-
-# Set media preference command
 @Client.on_message(filters.private & filters.command("setmedia"))
 async def set_media_command(client, message):
-    user_id = str(message.from_user.id)
+    user_id = message.from_user.id    
     media_type = message.text.split("/setmedia", 1)[1].strip().lower()
 
     if media_type not in ["video", "document"]:
-        await message.reply_text(f"**Invalid media type! Please choose 'video' or 'document'.**")
+        await message.reply_text("**Invalid media type! Please use 'video' or 'document'.**")
         return
 
-    preferences = load_preferences()
-    preferences[user_id] = media_type
-    save_preferences(preferences)
+    # Save the preferred media type to the database
+    await set_media_preference(user_id, media_type)
 
-    await message.reply_text(f"**Media Preference Set To :** {media_type} ✅", reply_markup=InlineKeyboardMarkup([
-        [InlineKeyboardButton("🗑️ Delete Preference", callback_data=f"delete_{user_id}")]
-    ]))
+    await message.reply_text(f"**Media Preference Set To:** {media_type} ✅")
 
-# Handle callback queries
-@Client.on_callback_query(filters.regex(r"delete_\d+"))
-async def delete_preference(client, callback_query):
-    user_id = callback_query.data.split("_")[1]
-    preferences = load_preferences()
+@Client.on_message(filters.private & filters.command("getmedia"))
+async def get_media_command(client, message):
+    user_id = message.from_user.id    
+    media_type = await get_media_preference(user_id)
 
-    if user_id in preferences:
-        del preferences[user_id]
-        save_preferences(preferences)
-        await callback_query.message.edit_text("**Media preference deleted successfully.**")
+    if media_type:
+        await message.reply_text(f"**Current Media Preference:** {media_type}")
     else:
-        await callback_query.message.edit_text("**No preference set to delete.**")
+        await message.reply_text("**No media preference set!**")
 
-# Get media preference function
-def get_media_preference(user_id):
-    preferences = load_preferences()
-    return preferences.get(str(user_id), None)
+@Client.on_message(filters.private & filters.command("delmedia"))
+async def del_media_command(client, message):
+    user_id = message.from_user.id
+
+    # Delete the media preference
+    await delete_media_preference(user_id)
+
+    await message.reply_text("**Media Preference Deleted! You can set it again using /setmedia.**")

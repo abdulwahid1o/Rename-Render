@@ -1,11 +1,8 @@
-# Don't Remove Credit @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
 
 import math
-import time 
+import time
 from helper.txt import mr
-from pyrogram.errors import UserNotParticipant
+from pyrogram.errors import UserNotParticipant, BadRequest
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram import enums
 
@@ -37,8 +34,7 @@ async def progress_for_pyrogram(current, total, ud_type, message, start):
             estimated_total_time if estimated_total_time != '' else "0 s"
         )
         try:
-            await message.edit(
-                text="{}\n\n{}".format(ud_type, tmp),               
+            await send_with_retry(message, text="{}\n\n{}".format(ud_type, tmp),               
                 reply_markup=InlineKeyboardMarkup( [[
                     InlineKeyboardButton("✖️ 𝙲𝙰𝙽𝙲𝙴𝙻 ✖️", callback_data="cancel")
                     ]]
@@ -91,8 +87,19 @@ async def not_subscribed(_, client, message):
       if user.status != enums.ChatMemberStatus.BANNED:                       
          return False 
    return True
-         
 
-
-
-
+# Retry mechanism for message sending
+async def send_with_retry(message, *args, **kwargs):
+    retry_count = 5
+    for i in range(retry_count):
+        try:
+            return await message.edit(*args, **kwargs)
+        except BadRequest as e:
+            if "synchronized" in str(e):
+                print(f"Retrying due to time sync issue... ({i+1}/{retry_count})")
+                time.sleep(1)  # Wait a bit before retrying
+            else:
+                raise e
+        except Exception as e:
+            raise e
+    raise Exception("Failed after multiple retries")

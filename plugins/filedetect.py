@@ -1,6 +1,3 @@
-# Don't Remove Credit @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
 
 from pyrogram import Client, filters
 from pyrogram.enums import MessageMediaType
@@ -9,19 +6,20 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceRepl
 @Client.on_message(filters.private & filters.reply)
 async def refunc(client, message):
     reply_message = message.reply_to_message
-    if (reply_message.reply_markup) and isinstance(reply_message.reply_markup, ForceReply):
-       new_name = message.text 
-       await message.delete() 
-       msg = await client.get_messages(message.chat.id, reply_message.id)
-       file = msg.reply_to_message
-       media = getattr(file, file.media.value)
-       if not "." in new_name:
-          if "." in media.file_name:
-              extn = media.file_name.rsplit('.', 1)[-1]
-          else:
-              extn = "mkv"
-          new_name = new_name + "." + extn
-       await reply_message.delete()
+    if reply_message.reply_markup and isinstance(reply_message.reply_markup, ForceReply):
+        await message.delete()
+        msg = await client.get_messages(message.chat.id, reply_message.id)
+        file = msg.reply_to_message
+        media = getattr(file, file.media.value)
+
+        # Automatically generate the new file name
+        new_name = media.file_name
+        if not "." in new_name:
+            extn = media.file_name.rsplit('.', 1)[-1] if "." in media.file_name else "mkv"
+            new_name = new_name + "." + extn
+
+        # Directly proceed with the conversion without asking for the file type
+        await upload_file(client, file, new_name)
 
        button = [[InlineKeyboardButton("📁 𝙳𝙾𝙲𝚄𝙼𝙴𝙽𝚃𝚂",callback_data = "upload_document")]]
        if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:

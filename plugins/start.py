@@ -22,13 +22,10 @@ async def start(client, message):
         [InlineKeyboardButton(' Help', callback_data='help')]
     ])
     if START_PIC:
-        l = await message.reply_photo(START_PIC, caption=txt, reply_markup=button)   
-        await asyncio.sleep (5)
-    await l.delete()    
+        await message.reply_photo(START_PIC, caption=txt, reply_markup=button)     
     else:
-        l = await message.reply_text(text=txt, reply_markup=button, disable_web_page_preview=True)
-    await asyncio.sleep (5)
-    await l.delete()
+        await message.reply_text(text=txt, reply_markup=button, disable_web_page_preview=True)
+    
 
 @Client.on_message(filters.command('logs') & filters.user(ADMIN))
 async def log_file(client, message):

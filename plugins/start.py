@@ -20,8 +20,7 @@ async def start(client, message):
         InlineKeyboardButton(' Support', url='https://t.me/abdul_wahid101')
         ],[
         InlineKeyboardButton(' About', callback_data='about') ],
-        [InlineKeyboardButton(' Help', callback_data='help')
-        ]
+        [InlineKeyboardButton(' Help', callback_data='help') ]
         ])
     if START_PIC:
         await message.reply_photo(START_PIC, caption=txt, reply_markup=button)       

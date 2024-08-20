@@ -5,8 +5,8 @@ from pyrogram import Client, filters
 from pyrogram.types import ForceReply
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
-from helpers.progress import progress_for_pyrogram
-from helpers.tools import convert
+from helper.progress import progress_for_pyrogram
+from helper.tools import convert
 from database.db import db
 
 @Client.on_message(filters.private & filters.reply)

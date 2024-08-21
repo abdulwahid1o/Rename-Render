@@ -7,4 +7,5 @@ pyrogram==2.0.35
 TgCrypto
 dnspython
 aiohttp
-moviepy
+ffmpeg-python
+python-telegram-bot

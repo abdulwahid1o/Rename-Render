@@ -93,21 +93,4 @@ async def not_subscribed(_, client, message):
    return True
 
 
-import ffmpeg
-
-async def extract_thumbnail(video_path, thumbnail_path, time="00:00:01"):
-    try:
-        (
-            ffmpeg
-            .input(video_path, ss=time)
-            .filter('scale', 320, -1)
-            .output(thumbnail_path, vframes=1)
-            .run(overwrite_output=True)
-        )
-        print(f"Thumbnail saved to {thumbnail_path}")
-    except ffmpeg.Error as e:
-        print(f"Error extracting thumbnail: {e.stderr.decode()}")
-         
-
-
 

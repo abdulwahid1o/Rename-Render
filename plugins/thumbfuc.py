@@ -1,60 +1,64 @@
 from pyrogram import Client, filters
 from helper.database import db
-import os
-from moviepy.editor import VideoFileClip
 
-# Initialize the bot
-app = Client("my_bot")
-
-# Function to extract a thumbnail from a video
-def extract_thumbnail(video_path, thumbnail_path, time=1.0):
-    """Extract a thumbnail from the video at the given time (in seconds)."""
-    with VideoFileClip(video_path) as video:
-        video.save_frame(thumbnail_path, t=time)
-
-# Command to view the saved thumbnail
-@app.on_message(filters.private & filters.command(['viewthumb']))
+@Client.on_message(filters.private & filters.command(['viewthumb']))
 async def viewthumb(client, message):    
     thumb = await db.get_thumbnail(message.from_user.id)
     if thumb:
-        await client.send_photo(
-            chat_id=message.chat.id, 
-            photo=thumb
-        )
+       await client.send_photo(
+	   chat_id=message.chat.id, 
+	   photo=thumb)
     else:
-        await message.reply_text("😔**Sorry! No thumbnail found...**😔") 
-
-# Command to delete the saved thumbnail
-@app.on_message(filters.private & filters.command(['delthumb']))
+        await message.reply_text("😔**Sorry ! No thumbnail found...**😔") 
+		
+@Client.on_message(filters.private & filters.command(['delthumb']))
 async def removethumb(client, message):
     await db.set_thumbnail(message.from_user.id, file_id=None)
     await message.reply_text("**Thumbnail deleted successfully**✅️")
-
-# Command to save a new thumbnail
-@app.on_message(filters.private & filters.photo)
+	
+@Client.on_message(filters.private & filters.photo)
 async def addthumbs(client, message):
-    lazy_dev = await message.reply_text("Please Wait ...")
+    AbdulWahid = await message.reply_text("Please Wait ...")
     await db.set_thumbnail(message.from_user.id, file_id=message.photo.file_id)                
-    await lazy_dev.edit("**Thumbnail saved successfully**✅️")
+    await AbdulWahid.edit("**Thumbnail saved successfully**✅️")
 
-# Automatically extract and set a thumbnail when a video is uploaded
+
+
+import os
+import ffmpeg
+from pyrogram import Client, filters
+from pyrogram.types import InputMediaPhoto
+
+app = Client("my_bot")
+
+# Function to extract thumbnail
+def extract_thumbnail(video_path, thumbnail_path, time='00:00:01'):
+    try:
+        (
+            ffmpeg
+            .input(video_path, ss=time)
+            .filter('scale', 320, -1)
+            .output(thumbnail_path, vframes=1)
+            .run()
+        )
+    except Exception as e:
+        print(f"Error extracting thumbnail: {e}")
+
 @app.on_message(filters.video)
-async def handle_video(client, message):
-    video = message.video
-    video_path = await message.download()
+async def video_handler(client, message):
+    video = await message.download()
+    thumbnail_path = f"{os.path.splitext(video)[0]}_thumbnail.jpg"
 
-    # Define the path for the thumbnail
-    thumbnail_path = f"{os.path.splitext(video_path)[0]}_thumbnail.jpg"
-    
-    # Extract thumbnail from the video
-    extract_thumbnail(video_path, thumbnail_path)
-    
-    # Send the video with the automatically generated thumbnail
-    await message.reply_video(video=video_path, thumb=thumbnail_path)
+    # Extract thumbnail
+    extract_thumbnail(video, thumbnail_path)
 
-    # Optionally, remove the downloaded video and thumbnail to save space
-    os.remove(video_path)
+    # Send the video with the thumbnail
+    await message.reply_video(
+        video,
+        thumb=thumbnail_path,
+        caption="Here is your video with an auto-generated thumbnail!"
+    )
+
+    # Clean up
+    os.remove(video)
     os.remove(thumbnail_path)
-
-# Start the bot
-

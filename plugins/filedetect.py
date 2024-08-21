@@ -35,7 +35,7 @@ async def refunc(client, message):
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait
-from helper.utility import extract_thumbnail
+from helper.utils import extract_thumbnail
 
 @Client.on_message(filters.video)
 async def handle_video_message(client, message):

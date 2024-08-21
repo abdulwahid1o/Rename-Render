@@ -62,3 +62,4 @@ async def video_handler(client, message):
     # Clean up
     os.remove(video)
     os.remove(thumbnail_path)
+	app.run()

@@ -24,18 +24,11 @@ async def addthumbs(client, message):
 
 
 
+import asyncio
+from pyrogram.errors import FloodWait
 import ffmpeg
-import os
 
-def extract_thumbnail(video_path, thumbnail_path, time="00:00:01"):
-    """
-    Extracts a thumbnail from the video at a specific time.
-    
-    :param video_path: Path to the input video file.
-    :param thumbnail_path: Path where the thumbnail image will be saved.
-    :param time: The timestamp in the video to capture the thumbnail (format: HH:MM:SS).
-    :return: None
-    """
+async def extract_thumbnail(video_path, thumbnail_path, time="00:00:01"):
     try:
         (
             ffmpeg
@@ -48,9 +41,16 @@ def extract_thumbnail(video_path, thumbnail_path, time="00:00:01"):
     except ffmpeg.Error as e:
         print(f"Error extracting thumbnail: {e.stderr.decode()}")
 
+async def handle_video(video_file, thumbnail_file):
+    try:
+        await extract_thumbnail(video_file, thumbnail_file, time="00:00:01")
+    except FloodWait as e:
+        print(f"FloodWait exception occurred: Waiting for {e.x} seconds")
+        await asyncio.sleep(e.x)  # Wait for the specified time
+        await handle_video(video_file, thumbnail_file)  # Retry the operation
+
 # Example Usage
 video_file = 'path_to_your_video.mp4'
 thumbnail_file = 'path_to_save_thumbnail.jpg'
 
-# Extract thumbnail at 1 second
-extract_thumbnail(video_file, thumbnail_file, time="00:00:01")
+await handle_video(video_file, thumbnail_file)

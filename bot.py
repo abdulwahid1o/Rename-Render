@@ -63,6 +63,14 @@ class Bot(Client):
     async def stop(self, *args):
         await super().stop()      
         logging.info("Bot Stopped 🙄")
-        
+      
 bot = Bot()
 bot.run()
+
+from pyrogram import Client
+import plugins.filedetect
+
+app = Client("my_bot")
+
+if __name__ == "__main__":
+    app.run()

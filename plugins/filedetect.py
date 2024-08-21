@@ -29,24 +29,3 @@ async def refunc(client, message):
           f"**Select the output file type**\n**• File Name :-**```{new_name}```",
           reply_to_message_id=file.id,
           reply_markup=InlineKeyboardMarkup(button))
-
-
-
-import asyncio
-from pyrogram import Client, filters
-from pyrogram.errors import FloodWait
-from helper.utils import extract_thumbnail
-
-@Client.on_message(filters.video)
-async def handle_video_message(client, message):
-    video_file = await message.download()  # Download the video
-    thumbnail_file = video_file.replace('.mp4', '_thumb.jpg')  # Define the thumbnail path
-
-    try:
-        await extract_thumbnail(video_file, thumbnail_file, time="00:00:01")
-        # You can now send the thumbnail, e.g., as a reply to the message:
-        await message.reply_photo(thumbnail_file, caption="Here's your thumbnail!")
-    except FloodWait as e:
-        print(f"FloodWait exception occurred: Waiting for {e.x} seconds")
-        await asyncio.sleep(e.x)  # Wait for the specified time
-        await handle_video_message(client, message)  # Retry the operation

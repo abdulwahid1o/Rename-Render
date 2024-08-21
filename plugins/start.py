@@ -26,9 +26,9 @@ async def start(client, message):
     else:
         l = await message.reply_text(text=txt, reply_markup=button, disable_web_page_preview=True)
     
-    await sleep(5)
-    await l.delete()  # Delete the bot's response after 5 seconds
-    await message.delete()  # Delete the input command after 5 seconds
+    await sleep(20)
+    await l.delete()  # Delete the bot's response after 20 seconds
+    await message.delete()  # Delete the input command after 20 seconds
     
 
 @Client.on_message(filters.command('logs') & filters.user(ADMIN))

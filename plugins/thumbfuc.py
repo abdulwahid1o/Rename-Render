@@ -57,4 +57,4 @@ async def handle_video(client, message):
     os.remove(thumbnail_path)
 
 # Start the bot
-app.run()
+

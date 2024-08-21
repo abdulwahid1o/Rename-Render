@@ -24,42 +24,33 @@ async def addthumbs(client, message):
 
 
 
-import os
 import ffmpeg
-from pyrogram import Client, filters
-from pyrogram.types import InputMediaPhoto
+import os
 
-app = Client("my_bot")
-
-# Function to extract thumbnail
-def extract_thumbnail(video_path, thumbnail_path, time='00:00:01'):
+def extract_thumbnail(video_path, thumbnail_path, time="00:00:01"):
+    """
+    Extracts a thumbnail from the video at a specific time.
+    
+    :param video_path: Path to the input video file.
+    :param thumbnail_path: Path where the thumbnail image will be saved.
+    :param time: The timestamp in the video to capture the thumbnail (format: HH:MM:SS).
+    :return: None
+    """
     try:
         (
             ffmpeg
             .input(video_path, ss=time)
             .filter('scale', 320, -1)
             .output(thumbnail_path, vframes=1)
-            .run()
+            .run(overwrite_output=True)
         )
-    except Exception as e:
-        print(f"Error extracting thumbnail: {e}")
+        print(f"Thumbnail saved to {thumbnail_path}")
+    except ffmpeg.Error as e:
+        print(f"Error extracting thumbnail: {e.stderr.decode()}")
 
-@app.on_message(filters.video)
-async def video_handler(client, message):
-    video = await message.download()
-    thumbnail_path = f"{os.path.splitext(video)[0]}_thumbnail.jpg"
+# Example Usage
+video_file = 'path_to_your_video.mp4'
+thumbnail_file = 'path_to_save_thumbnail.jpg'
 
-    # Extract thumbnail
-    extract_thumbnail(video, thumbnail_path)
-
-    # Send the video with the thumbnail
-    await message.reply_video(
-        video,
-        thumb=thumbnail_path,
-        caption="Here is your video with an auto-generated thumbnail!"
-    )
-
-    # Clean up
-    os.remove(video)
-    os.remove(thumbnail_path)
-	app.run()
+# Extract thumbnail at 1 second
+extract_thumbnail(video_file, thumbnail_file, time="00:00:01")

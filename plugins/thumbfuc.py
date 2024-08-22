@@ -1,23 +1,37 @@
-from pyrogram import Client, filters
-from helper.database import db
+import pyrogram
+from pyrogram import filters
 
-@Client.on_message(filters.private & filters.command(['viewthumb']))
-async def viewthumb(client, message):    
-    thumb = await db.get_thumbnail(message.from_user.id)
-    if thumb:
-       await client.send_photo(
-           chat_id=message.chat.id, 
-           photo=thumb)
-    else:
-        await message.reply_text("😔**Sorry ! No thumbnail found...**😔") 
+# Replace 'YOUR_BOT_TOKEN' with your actual bot token
+app = pyrogram.Client('my_bot', bot_token='7514260749:AAHib0PGo8F-DqF6IG9KPAoKUqvvA1OXN24')
 
-@Client.on_message(filters.private & filters.command(['delthumb']))
-async def removethumb(client, message):
-    await db.set_thumbnail(message.from_user.id, file_id=None)
-    await message.reply_text("**Thumbnail deleted successfully**✅️")
+@app.on_message(filters.video)
+async def add_thumbnail(client, message):
+    # Get the video file ID
+    video_file_id = message.video.file_id
 
-@Client.on_message(filters.private & filters.photo)
-async def addthumbs(client, message):
-    LazyDev = await message.reply_text("Please Wait ...")
-    await db.set_thumbnail(message.from_user.id, file_id=message.photo.file_id)                
-    await LazyDev.edit("**Thumbnail saved successfully**✅️")
+    # Download the video to a temporary file
+    video_path = await client.download_media(video_file_id, file_name='video.mp4')
+
+    # Extract the thumbnail at the 15-second mark using FFmpeg
+    thumbnail_path = 'thumbnail.jpg'
+    result = await client.run_inline_query(
+        'ffmpeg',
+        f'ss=15 t=0.01 -i {video_path} -vf scale=-1:240 -an {thumbnail_path}'
+    )
+    photo_file_id = result.results[0].document.file_id
+
+    # Download the thumbnail
+    thumbnail_path = await client.download_media(photo_file_id, file_name='thumbnail.jpg')
+
+    # Add the thumbnail to the beginning of the video using FFmpeg
+    output_video_path = 'output_video.mp4'
+    result = await client.run_inline_query(
+        'ffmpeg',
+        f'-i {video_path} -i {thumbnail_path} -filter_complex overlay=x=0:y=0 {output_video_path}'
+    )
+
+    # Send the modified video to the user
+    await client.send_video(message.chat.id, output_video_path)
+
+if __name__ == '__main__':
+    app.run()

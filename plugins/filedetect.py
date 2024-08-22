@@ -21,15 +21,18 @@ async def refunc(client, message):
         
         await reply_message.delete()
 
-        # Automatically select video output type
-        if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:
-            await client.send_video(
-                chat_id=message.chat.id,
-                video=media.file_id,
-                caption=f"**File renamed to:** `{new_name}`",
-                file_name=new_name,
-                supports_streaming=True,
-                reply_to_message_id=file.id
-            )
-        else:
-            await message.reply_text("This file type is not supported for automatic video conversion.")
+        try:
+            # Automatically select video output type
+            if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:
+                await client.send_video(
+                    chat_id=message.chat.id,
+                    video=media.file_id,
+                    caption=f"**File renamed to:** `{new_name}`",
+                    file_name=new_name,
+                    supports_streaming=True,
+                    reply_to_message_id=file.id
+                )
+            else:
+                await message.reply_text("This file type is not supported for automatic video conversion.")
+        except Exception as e:
+            await message.reply_text(f"An error occurred: {str(e)}")

@@ -9,3 +9,6 @@ dnspython
 aiohttp
 ffmpeg-python
 python-telegram-bot
+
+cv2
+telebot

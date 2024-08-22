@@ -3,7 +3,7 @@ import telebot
 import ffmpeg
 
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
-bot = telebot.TeleBot('YOUR_BOT_TOKEN')
+bot = telebot.TeleBot('7514260749:AAHib0PGo8F-DqF6IG9KPAoKUqvvA1OXN24')
 
 @bot.message_handler(content_types=['video'])
 def handle_video(message):

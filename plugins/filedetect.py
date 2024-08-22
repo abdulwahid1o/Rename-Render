@@ -22,14 +22,23 @@ async def refunc(client, message):
         await reply_message.delete()
 
         try:
-            # Automatically select video output type
-            if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:
+            if file.media == MessageMediaType.VIDEO:
+                # If the file is a video, send it as a video
                 await client.send_video(
                     chat_id=message.chat.id,
                     video=media.file_id,
                     caption=f"**File renamed to:** `{new_name}`",
                     file_name=new_name,
                     supports_streaming=True,
+                    reply_to_message_id=file.id
+                )
+            elif file.media == MessageMediaType.DOCUMENT:
+                # If the file is a document, resend it as a document with a new name
+                await client.send_document(
+                    chat_id=message.chat.id,
+                    document=media.file_id,
+                    caption=f"**File renamed to:** `{new_name}`",
+                    file_name=new_name,
                     reply_to_message_id=file.id
                 )
             else:

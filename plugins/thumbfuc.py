@@ -1,23 +1,29 @@
-from pyrogram import Client, filters
-from helper.database import db
+import cv2
+import telebot
+import ffmpeg
 
-@Client.on_message(filters.private & filters.command(['viewthumb']))
-async def viewthumb(client, message):    
-    thumb = await db.get_thumbnail(message.from_user.id)
-    if thumb:
-       await client.send_photo(
-	   chat_id=message.chat.id, 
-	   photo=thumb)
-    else:
-        await message.reply_text("😔**Sorry ! No thumbnail found...**😔") 
-		
-@Client.on_message(filters.private & filters.command(['delthumb']))
-async def removethumb(client, message):
-    await db.set_thumbnail(message.from_user.id, file_id=None)
-    await message.reply_text("**Thumbnail deleted successfully**✅️")
-	
-@Client.on_message(filters.private & filters.photo)
-async def addthumbs(client, message):
-    AbdulWahid = await message.reply_text("Please Wait ...")
-    await db.set_thumbnail(message.from_user.id, file_id=message.photo.file_id)                
-    await AbdulWahid.edit("**Thumbnail saved successfully**✅️")
+# Replace 'YOUR_BOT_TOKEN' with your actual bot token
+bot = telebot.TeleBot('YOUR_BOT_TOKEN')
+
+@bot.message_handler(content_types=['video'])
+def handle_video(message):
+    # Get the video file ID
+    video_file_id = message.video.file_id
+
+    # Download the video file
+    file_path = bot.download_file(video_file_id)
+
+    # Extract the thumbnail at the 15-second mark
+    thumbnail_path = "thumbnail.jpg"
+    ffmpeg.input(file_path).output(thumbnail_path, ss=15, t=0.01).run()
+
+    # Add the thumbnail to the video at the beginning
+    output_video_path = "output_video.mp4"
+    ffmpeg.input(file_path).complex_filter("overlay=x=0:y=0[out0]").output(output_video_path).run()
+
+    # Send the output video to the user
+    with open(output_video_path, 'rb') as video:
+        bot.send_video(message.chat.id, video)
+
+# Start the bot
+bot.polling()

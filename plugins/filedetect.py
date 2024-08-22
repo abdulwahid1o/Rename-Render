@@ -45,3 +45,18 @@ async def refunc(client, message):
                 await message.reply_text("This file type is not supported for automatic video conversion.")
         except Exception as e:
             await message.reply_text(f"An error occurred: {str(e)}")
+            
+            
+            import os
+import subprocess
+from pyrogram import Client, filters
+from pyrogram.enums import MessageMediaType
+from pyrogram.types import ForceReply
+
+@Client.on_message(filters.private & filters.reply)
+async def refunc(client, message):
+    reply_message = message.reply_to_message
+    if (reply_message.reply_markup) and isinstance(reply_message.reply_markup, ForceReply):
+        new_name = message.text
+        await message.delete()
+        msg

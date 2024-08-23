@@ -37,12 +37,14 @@ async def doc(bot, update):
     file = update.message.reply_to_message
     ms = await update.message.edit("⚠️__**Please wait...**__\n__Downloading file to my server...__")
     c_time = time.time()
+    
     try:
         path = await bot.download_media(
             message=file,
             progress=progress_for_pyrogram,
             progress_args=("\n⚠️__**Please wait...**__\n\n😈 **VideoConverter Bot in progress...**", ms, c_time)
         )
+        print("Media downloaded successfully.")
     except Exception as e:
         await ms.edit(e)
         return
@@ -51,6 +53,8 @@ async def doc(bot, update):
     dow_file_name = splitpath[1]
     old_file_name = f"downloads/{dow_file_name}"
     os.rename(old_file_name, file_path)
+    print(f"File renamed to {file_path}.")
+    
     duration = 0
     try:
         metadata = extractMetadata(createParser(file_path))
@@ -68,13 +72,18 @@ async def doc(bot, update):
     # Extract thumbnail from video at 15 seconds if no custom thumbnail is provided
     if not (media.thumbs or c_thumb):
         thumbnail_path = f"{file_path}.jpg"
-        (
-            ffmpeg
-            .input(file_path, ss=15)
-            .filter('scale', 320, -1)
-            .output(thumbnail_path, vframes=1)
-            .run()
-        )
+        try:
+            (
+                ffmpeg
+                .input(file_path, ss=15)
+                .filter('scale', 320, -1)
+                .output(thumbnail_path, vframes=1)
+                .run()
+            )
+            print("Thumbnail extracted successfully.")
+        except Exception as e:
+            await ms.edit(f"Error extracting thumbnail: {e}")
+            return
         ph_path = thumbnail_path
     else:
         if c_thumb:
@@ -85,6 +94,7 @@ async def doc(bot, update):
         img = Image.open(ph_path)
         img.resize((320, 320))
         img.save(ph_path, "JPEG")
+        print("Custom thumbnail used.")
 
     if c_caption:
         try:
@@ -131,6 +141,7 @@ async def doc(bot, update):
                 progress=progress_for_pyrogram,
                 progress_args=("⚠️__**Please wait...**__\n__Processing file upload....__", ms, c_time)
             )
+        print("File uploaded successfully.")
     except Exception as e:
         await ms.edit(f" Error {e}")
         os.remove(file_path)
@@ -142,3 +153,4 @@ async def doc(bot, update):
     os.remove(file_path)
     if ph_path:
         os.remove(ph_path)
+    print("Process completed successfully.")
